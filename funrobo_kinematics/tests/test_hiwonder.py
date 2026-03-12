@@ -7,7 +7,7 @@ import funrobo_kinematics.core.utils as ut
 
 #TODO Import your robot model script
 # ---------------------------------------
-from examples.mowgli import FiveDOF
+from funrobo_kinematics.core.fivedof import FiveDOF
 # ---------------------------------------
 
 

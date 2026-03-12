@@ -6,7 +6,7 @@ import funrobo_kinematics.core.utils as ut
 
 #TODO Import your robot model script
 # ---------------------------------------
-from examples.kinova import Kinova
+from funrobo_kinematics.core.kinova import Kinova
 # ---------------------------------------
 
 

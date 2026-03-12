@@ -1,11 +1,10 @@
-# FunRobo Project 1
+# FunRobo Mini-Projects 1 & 2
 
-This repository extends the template code provided for the Fundamentals of Robotics Mini-Project 1 assignment, covering the newly added implementations for the six-DOF Kinova arm and five-DOF Hiwonder arm within the visualization tool through the Denavit–Hartenberg parameters for each model. Through these parameters, we construct homogenous matrices to accurately transform the joint values for precise robotic control. Additionally, through these homogenous matrices, we are able to derive the Jacobian and Inverse-Jacobian for forward kinematics and implement resolved-rate motion control for real-time movement of the Hiwonder robot arm in response to joystick controls. For optimal functionality, we implemented the damped least squares method when calculating the Inverse-Jacobian to more effectively traverse through singularities. 
-
+This repository contains the implementations for the Fundamentals of Robotics Mini-Projects 1 and 2. It covers Forward Kinematics (FK), Resolved-Rate Motion Control (RRMC), Inverse Kinematics (IK), and motion planning for the Kinova (6-DOF) and Hiwonder (5-DOF) robot arms.
 
 ## Project Structure (Overview)
 
-The codebase is split into two main repositories: funrobo_kinematics (math & simulation) and funrobo_hiwonder (hardware drivers & control).
+The codebase is split into two main repositories: `funrobo_kinematics` (math & simulation) and `funrobo_hiwonder` (hardware drivers & control).
 
 ```bash
 funrobo_ws/
@@ -13,58 +12,65 @@ funrobo_ws/
     funrobo_kinematics/
       core/
         arm_models.py             # Parent templates (FiveDOFRobotTemplate)
+        fivedof.py                # 5-DOF Model with FK & IK implementations
+        kinova.py                 # 6-DOF Model with FK & IK implementations
         utils.py                  # DH transforms & Matrix utilities
         visualizer.py             # PyGame visualizer
-        fivedof_rrmc.py            # Part 2: 5-DOF RRMC Implementation (for importing)
-    scripts/
-      5dof_fk.py                  # Part 1: 5-DOF Forward Kinematics (Viz)
-      6dof_fk.py                  # Part 1: 6-DOF Kinova Forward Kinematics (Viz)
-      fivedof_rrmc.py             # Part 2: 5-DOF RRMC Implementation
 
+      
   funrobo_hiwonder/               # Hardware Control Library
     examples/
-      hiwonder_rrmc.py            # Part 3: Physical Robot Control (Gamepad)
+      hiwonder_ik_rrmc.py         # Part 4: IK & Shape Tracing
 ```
-*In the actual implementation, certain scripts were duplicated and moved to make importing those files easier.
 
 ## Part 1: Forward Kinematics (Simulation)
 
-The first segment of the project covers the derivation and implementation of DH parameters for both the Hiwonder (5-DOF) and Kinova (6-DOF) arms. Implementation Details
+The first segment covers the derivation and implementation of DH parameters for both the Hiwonder (5-DOF) and Kinova (6-DOF) arms.
 
-### 5-DOF Kinematics (fivedof_rrmc.py)
-
-This file implements the DH table for the Hiwonder robot arm and can be run with:
+### 5-DOF Kinematics (fivedof.py)
+Implements the DH table for the Hiwonder robot arm.
 ```bash
-python funrobo_kinematics/scripts/5dof_fk.py
+python funrobo_kinematics/funrobo_kinematics/core//fivedof.py
 ```
 
-### 6-DOF Kinematics (6dof_fk.py)
-
-This file implements the DH table for the Kinova robot arm and can be run with:
+### 6-DOF Kinematics (fivedof.py)
+Implements the DH table for the Kinova robot arm.
 ```bash
-python funrobo_kinematics/scripts/6dof_fk.py
+python funrobo_kinematics/funrobo_kinematics/core/kinova.py
 ```
 
 ## Part 2: Resolved-Rate Motion Control (Simulation)
 
-The second segment of the project covers the implementation of the Jacobian and Inverse Jacobian matrices to control the 5-DOF arm end-effector velocity in the visualizer.
+The second segment covers the implementation of the Jacobian and Inverse Jacobian matrices to control the 5-DOF arm end-effector velocity in the visualizer.
 
-### 5-DOF RRMC (fivedof_rrmc.py)
-
-This file implements the analytical derivation of the Jacobian through the homogeneous matrices and applies damped least squares when solving for the inverse Jacobian. It can be run with:
+### 5-DOF RRMC (fivedof.py)
+Implements analytical Jacobian derivation and Damped Least Squares (DLS) for the inverse Jacobian.
 ```bash
-python funrobo_kinematics/scripts/fivedof_rrmc.py
+python funrobo_kinematics/funrobo_kinematics/core//fivedof.py
 ```
-
 
 ## Part 3: Hardware Control (Physical)
 
-This part of the project covers the implementation of RRMC on the physical Hiwonder robot using a Logitech F310 Gamepad.
+This part covers the implementation of RRMC on the physical Hiwonder robot using a Logitech F310 Gamepad.
 
 ### Physical Control (hiwonder_rrmc.py)
-This file implements a control loop with dead reckoning that uses the Jacobian and gamepad input to move the end effector of the Hiwonder robot in real-time. It can be run with:
+Implements a control loop with dead reckoning that uses the Jacobian and gamepad input to move the end effector in real-time.
 ```bash
 python funrobo_hiwonder/examples/hiwonder_rrmc.py
 ```
 
+## Part 4: Inverse Kinematics & Path Planning
+
+This section covers the implementation of Inverse Kinematics (IK) to allow the 5-DOF arm to reach specific Cartesian coordinates. We implemented both numerical and analytical IK solvers.
+
+### IK Implementation (fivedof.py)
+The `FiveDOF` class in `funrobo_kinematics/core/fivedof.py` now includes:
+- `calc_numerical_ik`: Solves for joint angles given a target end-effector pose using an iterative Jacobian pseudo-inverse method with joint limit enforcement.
+- `calc_inverse_kinematics`: An analytical approach using kinematic decoupling.
+
+### Shape Tracing (hiwonder_ik_rrmc.py)
+This script utilizes the IK solver to make the physical robot trace defined shapes (Square, Star, letters C-A-T) in 3D space.
+```bash
+python funrobo_hiwonder/examples/hiwonder_ik_rrmc.py
+```
 
